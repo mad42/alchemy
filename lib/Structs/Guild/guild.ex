@@ -276,14 +276,14 @@ defmodule Alchemy.Guild do
   @doc """
   Finds the highest ranked role of a member in a guild.
 
-  This is useful, because the permissions and color 
+  This is useful, because the permissions and color
   of the highest role are the ones that apply to that member.
   """
   @spec highest_role(t, member) :: role
   def highest_role(guild, member) do
     guild.roles
     |> Enum.sort_by(& &1.position)
-    # never null because of the @everyone role 
+    # never null because of the @everyone role
     |> Enum.find(&(&1 in member.roles))
   end
 
@@ -304,7 +304,9 @@ defmodule Alchemy.Guild do
   If the parameters do not match these conditions, an `ArgumentError` is raised.
   """
   @spec icon_url(__MODULE__.t(), String.t(), 16..2048) :: String.t()
-  def icon_url(guild, type \\ "png", size \\ 256) when is_valid_guild_icon_url(type, size) do
+  def icon_url(guild, type \\ "png", size \\ 256)
+
+  def icon_url(guild, type, size) when is_valid_guild_icon_url(type, size) do
     case guild.icon do
       nil -> nil
       hash -> "https://cdn.discordapp.com/icons/#{guild.id}/#{hash}.#{type}?size=#{size}"

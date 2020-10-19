@@ -20,26 +20,28 @@ defmodule Alchemy.EventStage.StageSupervisor do
 
   def init(command_options) do
     cogs = [
-      worker(CommandHandler, [command_options]),
-      worker(EventHandler, []),
-      worker(EventRegistry, [])
+      {CommandHandler, [command_options]},
+      EventHandler,
+      EventRegistry
     ]
 
-    stage1 = [worker(EventBuffer, [])]
+    stage1 = [EventBuffer]
 
     stage2 =
       for x <- 1..@limit do
-        worker(Cacher, [x], id: x)
+        {Cacher, [x], id: x}
       end
 
     stage3_4 = [
-      worker(EventDispatcher, [@limit]),
-      worker(CommandStage, [@limit]),
-      worker(EventStage, [@limit]),
-      worker(Tasker, [])
+      {EventDispatcher, [@limit]},
+      {CommandStage, [@limit]},
+      {EventStage, [@limit]},
+      Tasker
     ]
 
     children = cogs ++ stage1 ++ stage2 ++ stage3_4
-    supervise(children, strategy: :one_for_one)
+
+    opts = [strategy: :one_for_one]
+    Supervisor.init(children, opts)
   end
 end

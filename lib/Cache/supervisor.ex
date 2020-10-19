@@ -16,16 +16,17 @@ defmodule Alchemy.Cache.Supervisor do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def init(:ok) do
+  def init(_init_arg) do
     children = [
-      supervisor(Registry, [:unique, :guilds], id: 1),
-      supervisor(GuildSupervisor, []),
-      worker(PrivChannels, []),
-      worker(User, []),
-      worker(Channels, [])
+      {Registry, [:unique, :guilds], id: 1},
+      {GuildSupervisor, type: :supervisor},
+      PrivChannels,
+      User,
+      Channels
     ]
 
-    supervise(children, strategy: :one_for_one)
+    opts = [strategy: :one_for_one]
+    Supervisor.init(children, opts)
   end
 
   # used to handle the READY event

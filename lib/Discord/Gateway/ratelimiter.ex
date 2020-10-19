@@ -13,12 +13,13 @@ defmodule Alchemy.Discord.Gateway.RateLimiter do
       Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
     end
 
-    def init(:ok) do
+    def init(_init_arg) do
       children = [
-        worker(RateLimiter, [])
+        RateLimiter
       ]
 
-      supervise(children, strategy: :simple_one_for_one)
+      opts = [strategy: :one_for_one]
+      Supervisor.init(children, opts)
     end
   end
 

@@ -8,6 +8,10 @@ defmodule Alchemy.Cache.Guilds do
   alias Alchemy.Guild
   import Alchemy.Cache.Utility
 
+  def init(init_arg) do
+    {:ok, init_arg}
+  end
+
   defmodule GuildSupervisor do
     @moduledoc false
     # acts as a dynamic supervisor for the surrounding GenServer
@@ -18,12 +22,13 @@ defmodule Alchemy.Cache.Guilds do
       Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
     end
 
-    def init(:ok) do
+    def init(_init_arg) do
       children = [
-        worker(Guilds, [])
+        Guilds
       ]
 
-      supervise(children, strategy: :simple_one_for_one)
+      opts = [strategy: :one_for_one]
+      Supervisor.init(children, opts)
     end
   end
 
@@ -141,7 +146,8 @@ defmodule Alchemy.Cache.Guilds do
   end
 
   def add_channel(guild_id, %{"id" => id} = channel) do
-    Channels.add_channels([channel], channel["guild_id"]) # assume has guild_id, otherwise we have no idea where it belongs
+    # assume has guild_id, otherwise we have no idea where it belongs
+    Channels.add_channels([channel], channel["guild_id"])
     call(guild_id, {:put, "channels", id, channel})
   end
 

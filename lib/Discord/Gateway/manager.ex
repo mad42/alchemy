@@ -8,7 +8,6 @@ defmodule Alchemy.Discord.Gateway.Manager do
   alias Alchemy.Discord.Gateway
   alias Alchemy.Discord.Gateway.RateLimiter
   alias Alchemy.Discord.Api
-  import Supervisor.Spec
 
   ### Public ###
 
@@ -46,10 +45,11 @@ defmodule Alchemy.Discord.Gateway.Manager do
 
   def start_supervisor do
     children = [
-      worker(Gateway, [])
+      Gateway
     ]
 
-    Supervisor.start_link(children, strategy: :simple_one_for_one)
+    opts = [strategy: :one_for_one]
+    Supervisor.start_link(children, opts)
   end
 
   def start_link(token, options) do

@@ -17,7 +17,10 @@ defmodule Alchemy.EventStage.Tasker do
   end
 
   def init(:ok) do
-    children = [worker(Runner, [], restart: :temporary)]
+    children = [
+      {Runner, [], restart: :temporary}
+    ]
+
     producers = [CommandStage, EventStage]
     {:ok, children, strategy: :one_for_one, subscribe_to: producers}
   end

@@ -59,22 +59,23 @@ defmodule Alchemy.Client do
   # for managing requests.
   def init({token, options}) do
     base = [
-      worker(RateManager, [token]),
-      worker(GatewayManager, [token, options]),
-      supervisor(GatewayRates, []),
-      supervisor(CacheSupervisor, []),
-      supervisor(StageSupervisor, [options])
+      {RateManager, [token]},
+      {GatewayManager, [token, options]},
+      {GatewayRates, type: :supervisor},
+      {CacheSupervisor, type: :supervisor},
+      {StageSupervisor, [options], type: :supervisor}
     ]
 
     # don't even start the voice section if the path isn't set
     children =
       if Application.get_env(:alchemy, :ffmpeg_path) do
-        [supervisor(VoiceSupervisor, []) | base]
+        [{VoiceSupervisor, type: :supervisor} | base]
       else
         base
       end
 
-    supervise(children, strategy: :one_for_one)
+    opts = [strategy: :one_for_one]
+    Supervisor.init(children, opts)
   end
 
   ### Public ###

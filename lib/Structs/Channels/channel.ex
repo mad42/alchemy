@@ -15,7 +15,6 @@ defmodule Alchemy.Channel do
   }
 
   alias Alchemy.User
-  import Alchemy.Structs
 
   @moduledoc """
   This module contains useful functions for operating on `Channels`.
@@ -161,7 +160,7 @@ defmodule Alchemy.Channel do
 
     Whether or not the channel is considered nsfw
   - `last_message_id`
-    
+
     The id of the last message sent in the channel, if any
   - `parent_id`
 
@@ -224,7 +223,7 @@ defmodule Alchemy.Channel do
 
     The id of the guild this channel belongs to
   - `position`
-    
+
     The sorting position of this channel in the guild
   - `permission_overwrites`
 

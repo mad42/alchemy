@@ -69,6 +69,16 @@ defmodule Alchemy.Voice.Gateway do
     ]
   end
 
+  def child_spec(opts) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [opts]},
+      type: :worker,
+      restart: :permanent,
+      shutdown: 500
+    }
+  end
+
   def start_link(url, token, session, user_id, guild_id, channel) do
     :crypto.start()
     :ssl.start()
